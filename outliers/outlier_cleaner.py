@@ -15,21 +15,38 @@ def outlierCleaner(predictions, ages, net_worths):
 
     ### your code goes here
     import numpy
-    predictions.np = numpy.array(predictions)
-    net_worths.np = numpy.array(net_worths)
-    diff = net_worths.np - predictions.np
-    # for i in predictions:
+    print 'START'
+    predictions_np = numpy.array(predictions)
+    net_worths_np = numpy.array(net_worths)
+    diff = net_worths_np - predictions_np
+
+    abs_diff = numpy.absolute(diff)
+    print type(abs_diff)
+    sored_diff = numpy.sort(abs_diff,axis=0)
+    print sored_diff
+    print '9',sored_diff[81]
+
+    for i in range(81):
+        cleaned_data_item = []
+        if abs(net_worths[i] - predictions[i]) <= sored_diff[81] :
+
+            cleaned_data_item.append(ages[i])
+            cleaned_data_item.append(net_worths[i])
+            cleaned_data_item.append(net_worths[i] - predictions[i])
+            cleaned_data.append(cleaned_data_item)
 
 
-
+    print cleaned_data
     return cleaned_data
 
-import numpy
-list1 = [1,2,3,4,5]
-list2 = [2,3,4,5,7]
-np1 = numpy.array(list1)
-np2 = numpy.array(list2)
-for i in np1:
-    print i
-# print np2 - np1
-print 'OK'
+# import numpy
+# list1 = [5,8,6,55,41]
+# list2 = [2,3,4,5,7]
+# np1 = numpy.array(list1)
+# np2 = numpy.array(list2)
+# for i in np1:
+#     print i
+# print np1 - np2
+# print 'OK'
+# print numpy.sort(np1 - np2)
+
