@@ -36,7 +36,10 @@ def parseOutText(f):
         ### space between each stemmed word)
 
         # print text_string
-        text_string.replace('\n',' ')
+        # text_string.replace('\n',' ')
+        # for i in ["sara","shackleton","chris","germani"]:
+        #     text_string = text_string.replace(i,'')
+
         sp = text_string.split()
         # print sp
         # print sp[0]
@@ -44,10 +47,9 @@ def parseOutText(f):
         for i in sp:
             # i = i.replace('\n\n',' ')
             # print i
-            if i != '':
-                si = stemmer.stem(i)
-
-                words = words + si + ' '
+            # if i != '':
+            si = stemmer.stem(i)
+            words = words + si + ' '
         # print text_string
 
 
@@ -57,8 +59,8 @@ def parseOutText(f):
 
 def main():
 
-    ff = open("../text_learning/test_email.txt", "r")
-    # ff = open("../enron_mail_20150507\maildir/jones-t/all_documents/4046.", "r")
+    # ff = open("../text_learning/test_email.txt", "r")
+    ff = open("../enron_mail_20150507\maildir/jones-t/all_documents/4046.", "r")
     text = parseOutText(ff)
     print text
 

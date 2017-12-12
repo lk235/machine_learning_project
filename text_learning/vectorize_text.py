@@ -49,14 +49,17 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
             print path
         email = open(path, "r")
 
-        ### use parseOutText to extract the text from the opened email
+        ### use parseOutText to extract the text from the opened
+
         parse_mail = parseOutText(email)
+        parse_mail = parse_mail.replace("sara", '')
+        parse_mail = parse_mail.replace("shackleton", '')
+        parse_mail = parse_mail.replace("chris", '')
+        parse_mail = parse_mail.replace("germani", '')
+
 
         ### use str.replace() to remove any instances of the words
-        parse_mail.replace("sara", '')
-        parse_mail.replace("shackleton", '')
-        parse_mail.replace("chris", '')
-        parse_mail.replace("germani", '')
+
 
         ### ["sara", "shackleton", "chris", "germani"]
 
@@ -90,10 +93,14 @@ pickle.dump( from_data, open("your_email_authors.pkl", "w") )
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
+import nltk
+# nltk.download('stopwords')
 sw = stopwords.words("english")
 
 vector = TfidfVectorizer(stop_words='english')
 vector.fit_transform(word_data)
 result = vector.get_feature_names()
 print len(result)
+print result[34597]
+
 
