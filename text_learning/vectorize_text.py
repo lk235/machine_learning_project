@@ -43,36 +43,38 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
         ### once everything is working, remove this line to run over full dataset
 
         temp_counter += 1
-        if temp_counter < 200:
-            path = os.path.join('../enron_mail_20150507', path[:-1])
-            # print path
-            email = open(path, "r")
+        # if temp_counter < 200:
+        path = os.path.join('../enron_mail_20150507', path[:-1])
+        if temp_counter == 152:
+            print path
+        email = open(path, "r")
 
-            ### use parseOutText to extract the text from the opened email
-            parse_mail = parseOutText(email)
-            ### use str.replace() to remove any instances of the words
-            parse_mail.replace("sara",'')
-            parse_mail.replace("shackleton", '')
-            parse_mail.replace("chris", '')
-            parse_mail.replace("germani", '')
+        ### use parseOutText to extract the text from the opened email
+        parse_mail = parseOutText(email)
 
+        ### use str.replace() to remove any instances of the words
+        parse_mail.replace("sara", '')
+        parse_mail.replace("shackleton", '')
+        parse_mail.replace("chris", '')
+        parse_mail.replace("germani", '')
 
-            ### ["sara", "shackleton", "chris", "germani"]
+        ### ["sara", "shackleton", "chris", "germani"]
 
-            ### append the text to word_data
-            word_data.append(parse_mail)
+        ### append the text to word_data
+        word_data.append(parse_mail)
 
-            ### append a 0 to from_data if email is from Sara, and 1 if email is from Chris
-            if from_person == 'sara':
-                from_data.append(0)
-            else:
-                from_data.append(1)
+        ### append a 0 to from_data if email is from Sara, and 1 if email is from Chris
+        if from_person == 'sara':
+            from_data.append(0)
+        else:
+            from_data.append(1)
 
-            email.close()
+        email.close()
 
 
 print "emails processed"
 print '152: ',word_data[152]
+
 from_sara.close()
 from_chris.close()
 
@@ -85,4 +87,13 @@ pickle.dump( from_data, open("your_email_authors.pkl", "w") )
 
 ### in Part 4, do TfIdf vectorization here
 
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
+sw = stopwords.words("english")
+
+vector = TfidfVectorizer(stop_words='english')
+vector.fit_transform(word_data)
+result = vector.get_feature_names()
+print len(result)
 

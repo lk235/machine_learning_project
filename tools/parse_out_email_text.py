@@ -23,6 +23,7 @@ def parseOutText(f):
     ### split off metadata
     content = all_text.split("X-FileName:")
     words = ""
+    stemmer = SnowballStemmer('english')
     if len(content) > 1:
         ### remove punctuation
         text_string = content[1].translate(string.maketrans("", ""), string.punctuation)
@@ -33,20 +34,21 @@ def parseOutText(f):
         ### split the text string into individual words, stem each word,
         ### and append the stemmed word to words (make sure there's a single
         ### space between each stemmed word)
-        stemmer = SnowballStemmer('english')
-        sp = text_string.split(' ')
-        print sp
+
+        # print text_string
+        text_string.replace('\n',' ')
+        sp = text_string.split()
+        # print sp
+        # print sp[0]
+
         for i in sp:
-
-
+            # i = i.replace('\n\n',' ')
+            # print i
             if i != '':
                 si = stemmer.stem(i)
-                print si
+
                 words = words + si + ' '
         # print text_string
-        
-
-
 
 
     return words
@@ -54,7 +56,9 @@ def parseOutText(f):
     
 
 def main():
+
     ff = open("../text_learning/test_email.txt", "r")
+    # ff = open("../enron_mail_20150507\maildir/jones-t/all_documents/4046.", "r")
     text = parseOutText(ff)
     print text
 
