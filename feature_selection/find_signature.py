@@ -21,7 +21,8 @@ authors = pickle.load( open(authors_file, "r") )
 ### classifier functions in versions 0.15.2 and earlier
 from sklearn import cross_validation
 features_train, features_test, labels_train, labels_test = cross_validation.train_test_split(word_data, authors, test_size=0.1, random_state=42)
-
+print 'train_len :',len(features_train)
+print 'train_len :',len(labels_train)
 from sklearn.feature_extraction.text import TfidfVectorizer
 vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
                              stop_words='english')
@@ -35,8 +36,13 @@ features_test  = vectorizer.transform(features_test).toarray()
 features_train = features_train[:150].toarray()
 labels_train   = labels_train[:150]
 
-
-
+from sklearn import tree
+from sklearn.metrics import accuracy_score
+clf = tree.DecisionTreeClassifier()
+clf.fit(features_train,labels_train)
+pred = clf.predict(features_train)
+accuracy = accuracy_score(labels_train,pred)
+print accuracy
 ### your code goes here
 
 
