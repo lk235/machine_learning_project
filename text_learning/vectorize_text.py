@@ -61,9 +61,16 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
         # parse_mail = parse_mail.replace("chris", '')
         # parse_mail = parse_mail.replace("germani", '')
 
-        for word in ["sara", "shackleton", "chris", "germani"]:
+        for word in ["sara", "shackleton", "chris", "germani","sshacklensf","cgermannsf"]:
             parse_mail = parse_mail.replace(word, "")
 
+        # , "sshacklensf"-- 0.76,
+        # "cgermannsf",--0.666666666667
+        #  "houectect" --- 0.363636363636
+        # houect 0.271186440678
+        # houston 0.291313559322
+        # fax 0.249512670565
+        # forward 0.219520188624
         ### use str.replace() to remove any instances of the words
 
 

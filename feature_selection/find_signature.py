@@ -8,8 +8,10 @@ numpy.random.seed(42)
 ### The words (features) and authors (labels), already largely processed.
 ### These files should have been created from the previous (Lesson 10)
 ### mini-project.
-words_file = "../text_learning/your_word_data.pkl" 
+words_file = "../text_learning/your_word_data.pkl"
 authors_file = "../text_learning/your_email_authors.pkl"
+# words_file = "C:\Users\lk235\Desktop\DATA\data\data/your_word_data.pkl"
+# authors_file = "C:\Users\lk235\Desktop\DATA\data\data/your_email_authors.pkl"
 word_data = pickle.load( open(words_file, "r"))
 authors = pickle.load( open(authors_file, "r") )
 
@@ -36,10 +38,7 @@ features_test  = vectorizer.transform(features_test).toarray()
 ### train on only 150 events to put ourselves in this regime
 features_train = features_train[:150].toarray()
 labels_train   = labels_train[:150]
-print features_train
-print features_test
-print labels_train
-print labels_test
+
 from sklearn import tree
 from sklearn.metrics import accuracy_score
 clf = tree.DecisionTreeClassifier()
@@ -52,7 +51,21 @@ accuracy = accuracy_score(labels_test,pred)
 
 print accuracy
 print clf.score(features_test,labels_test)
-### your code goes here
+importance =  clf.feature_importances_
+count = 0
+count_list = []
+for i in importance:
+
+    if i > 0.2:
+        print i
+        count_list.append(count)
+    count = count + 1
+print count_list
+print vectorizer.get_feature_names()[18681]
+print vectorizer.get_feature_names()[19177]
+
+
+### your code goes her
 
 
 
