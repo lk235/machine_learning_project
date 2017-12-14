@@ -23,6 +23,7 @@ from sklearn import cross_validation
 features_train, features_test, labels_train, labels_test = cross_validation.train_test_split(word_data, authors, test_size=0.1, random_state=42)
 print 'train_len :',len(features_train)
 print 'train_len :',len(labels_train)
+print features_train[:150]
 from sklearn.feature_extraction.text import TfidfVectorizer
 vectorizer = TfidfVectorizer(sublinear_tf=True, max_df=0.5,
                              stop_words='english')
@@ -35,14 +36,22 @@ features_test  = vectorizer.transform(features_test).toarray()
 ### train on only 150 events to put ourselves in this regime
 features_train = features_train[:150].toarray()
 labels_train   = labels_train[:150]
-
+print features_train
+print features_test
+print labels_train
+print labels_test
 from sklearn import tree
 from sklearn.metrics import accuracy_score
 clf = tree.DecisionTreeClassifier()
 clf.fit(features_train,labels_train)
-pred = clf.predict(features_train)
-accuracy = accuracy_score(labels_train,pred)
+pred = clf.predict(features_test)
+
+accuracy = accuracy_score(labels_test,pred)
+
+
+
 print accuracy
+print clf.score(features_test,labels_test)
 ### your code goes here
 
 

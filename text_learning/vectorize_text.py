@@ -38,11 +38,15 @@ temp_counter = 0
 
 
 for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
+    print
     for path in from_person:
         ### only look at first 200 emails when developing
         ### once everything is working, remove this line to run over full dataset
 
         temp_counter += 1
+        if temp_counter < 10:
+            print 'name: ',name
+            print 'from_person: ',from_person
         # if temp_counter < 200:
         path = os.path.join('../enron_mail_20150507', path[:-1])
         if temp_counter == 152:
@@ -52,11 +56,13 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
         ### use parseOutText to extract the text from the opened
 
         parse_mail = parseOutText(email)
-        parse_mail = parse_mail.replace("sara", '')
-        parse_mail = parse_mail.replace("shackleton", '')
-        parse_mail = parse_mail.replace("chris", '')
-        parse_mail = parse_mail.replace("germani", '')
+        # parse_mail = parse_mail.replace("sara", '')
+        # parse_mail = parse_mail.replace("shackleton", '')
+        # parse_mail = parse_mail.replace("chris", '')
+        # parse_mail = parse_mail.replace("germani", '')
 
+        for word in ["sara", "shackleton", "chris", "germani"]:
+            parse_mail = parse_mail.replace(word, "")
 
         ### use str.replace() to remove any instances of the words
 
@@ -67,9 +73,9 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
         word_data.append(parse_mail)
 
         ### append a 0 to from_data if email is from Sara, and 1 if email is from Chris
-        if from_person == 'sara':
+        if name == 'sara':
             from_data.append(0)
-        else:
+        elif name == 'chris':
             from_data.append(1)
 
         email.close()
