@@ -12,7 +12,7 @@ data_dict = pickle.load( open("../final_project/final_project_dataset.pkl", "r")
 data_dict.pop( 'TOTAL', 0 )
 features = ["salary", "bonus"]
 data = featureFormat(data_dict, features)
-
+print type(data)
 for d in data_dict:
     sa = data_dict[d]['salary']
     try:
