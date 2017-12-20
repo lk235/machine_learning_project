@@ -143,7 +143,7 @@ pred_tree = clf.predict(features_test)
 print accuracy_score(labels_test,pred_tree)
 
 from sklearn.svm import SVC
-clf = SVC()
+clf = SVC(kernel='linear')
 clf.fit(features_train,labels_train)
 pred_svm = clf.predict(features_test)
 print accuracy_score(labels_test,pred_svm)
@@ -158,12 +158,26 @@ from sklearn.model_selection import GridSearchCV
 # features_train = features_train[:len(features_train)/10]
 # labels_train = labels_train[:len(labels_train)/10]
 
-# parameters = {'kernel':('linear', 'poly', 'rbf', 'sigmoid'), 'C':[1, 1000]}
-parameters = {'C': [1, 10], 'kernel': ['linear']},
-svc = SVC()
+# parameters = {'kernel':('linear', 'rbf'), 'C':[1, 10]}
+# svc = svm.SVC()
+# clf = GridSearchCV(svc, parameters)
+# param_grid = {'C': [1,10,100],
+#               'gamma': [0.1,1,10,100], }
+# clf = GridSearchCV(SVC(kernel='rbf'), param_grid)
+# clf.fit(features_train, labels_train)
+
+parameters = {'C':[1, 10,100]}
+# parameters = {'C': [1, 10], 'kernel': ['linear']},
+svc = SVC(kernel='linear')
 clf = GridSearchCV(svc, parameters)
-print clf.fit(features_train,labels_train)
+print 'HERE!!!'
+clf.fit(features_train,labels_train)
+print 'HERE2!!!'
 # print sorted(clf.cv_results_.keys())
+
+print clf.best_score_
+print clf.get_params()
+print clf.best_estimator_
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
