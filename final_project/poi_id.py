@@ -177,11 +177,15 @@ parameters = {'C': [0.001, 0.01, 0.1, 1, 10], 'gamma': [0.001, 0,0.01, 0.1, 1]}
 svc = SVC(kernel='rbf')
 clf = GridSearchCV(svc, parameters)
 
+parameters_tree = {'min_samples_split': [2,10,20,30,40,50]}
+tree = tree.DecisionTreeClassifier()
+clf_tree = GridSearchCV(tree,parameters_tree)
+
 # param_grid = {'C': [1e3, 5e3, 1e4, 5e4, 1e5],
 #               'gamma': [0.00001,0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
 # clf = GridSearchCV(SVC(kernel='rbf'), param_grid)
 clf.fit(features_train,labels_train)
-
+clf_tree.fit(features_train,labels_train)
 # print sorted(clf.cv_results_.keys())
 
 
@@ -197,6 +201,12 @@ from sklearn.metrics import precision_score
 recall = recall_score(labels_test, pred_new, average='micro')
 precision = precision_score(labels_test, pred_new, average='micro')
 print recall,precision
+
+print clf_tree.best_score_
+print clf_tree.best_estimator_
+print clf_tree.best_params_
+pred_new_tree = clf_tree.predict(features_test)
+print 'SCORE_NEW_TREE: ',accuracy_score(labels_test,pred_new_tree)
 
 # import numpy as np
 # from sklearn.model_selection import StratifiedShuffleSplit
