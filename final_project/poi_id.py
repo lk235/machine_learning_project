@@ -29,7 +29,7 @@ poi_count = 0
 non_poi_count = 0
 nan_list = []
 for key,value in data_dict.iteritems():
-
+    
     for k,v in value.iteritems():
         if v == 'NaN':
             nan_list.append(k)
@@ -95,17 +95,16 @@ my_dataset = data_dict
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 
 labels, features = targetFeatureSplit(data)
-from sklearn import linear_model
-reg = linear_model.Lasso()
-reg.fit(features,labels)
-# reg.predict([1,2])
-print reg.coef_
-print reg.intercept_
+
+from sklearn.preprocessing import MinMaxScaler
+scaler = MinMaxScaler()
+rescale_features = scaler.fit_transform(features)
+
 
 from sklearn.feature_selection import SelectKBest
 # from sklearn.feature_selection import chi2
 
-selector = SelectKBest(k=9).fit(features,labels)
+selector = SelectKBest(k=9).fit(rescale_features,labels)
 print selector.scores_
 print selector.pvalues_
 
@@ -125,34 +124,41 @@ print new_features
 # Provided to give you a starting point. Try a variety of classifiers.
 data = featureFormat(data_dict, new_features)
 labels, features = targetFeatureSplit(data)
+rescale_features = scaler.fit_transform(features)
 
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-features_train, features_test, labels_train, labels_test = train_test_split(features, labels,test_size=0.3,random_state=42)
+features_train, features_test, labels_train, labels_test = train_test_split(rescale_features, labels,test_size=0.3,random_state=42)
 
 from sklearn.naive_bayes import GaussianNB
 clf = GaussianNB()
 clf.fit(features_train,labels_train)
 pred_bayes = clf.predict(features_test)
-print accuracy_score(labels_test,pred_bayes)
+print 'BAYES : ',accuracy_score(labels_test,pred_bayes)
 
 from sklearn import tree
 clf = tree.DecisionTreeClassifier()
 clf.fit(features_train,labels_train)
 pred_tree = clf.predict(features_test)
-print accuracy_score(labels_test,pred_tree)
+print 'TREE : ',accuracy_score(labels_test,pred_tree)
 
 from sklearn.svm import SVC
-clf = SVC(kernel='linear')
+from sklearn.svm import LinearSVC
+clf = SVC()
+clf_1 = LinearSVC(random_state=0)
 clf.fit(features_train,labels_train)
+clf_1.fit(features_train,labels_train)
 pred_svm = clf.predict(features_test)
-print accuracy_score(labels_test,pred_svm)
+pred_svm_1 = clf_1.predict(features_test)
+print 'SVM : ', accuracy_score(labels_test,pred_svm)
+print 'SVM_LINEAR : ', accuracy_score(labels_test,pred_svm_1)
+
 
 from sklearn.neighbors import KNeighborsClassifier
 clf = KNeighborsClassifier()
 clf.fit(features_train,labels_train)
 pred_knn = clf.predict(features_test)
-print accuracy_score(labels_test,pred_knn)
+print 'KNN : ',accuracy_score(labels_test,pred_knn)
 
 from sklearn.model_selection import GridSearchCV
 # features_train = features_train[:len(features_train)/10]
@@ -166,18 +172,46 @@ from sklearn.model_selection import GridSearchCV
 # clf = GridSearchCV(SVC(kernel='rbf'), param_grid)
 # clf.fit(features_train, labels_train)
 
-parameters = {'C':[1, 10,100]}
+parameters = {'C': [0.001, 0.01, 0.1, 1, 10], 'gamma': [0.001, 0,0.01, 0.1, 1]}
 # parameters = {'C': [1, 10], 'kernel': ['linear']},
-svc = SVC(kernel='linear')
+svc = SVC(kernel='rbf')
 clf = GridSearchCV(svc, parameters)
-print 'HERE!!!'
+
+# param_grid = {'C': [1e3, 5e3, 1e4, 5e4, 1e5],
+#               'gamma': [0.00001,0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
+# clf = GridSearchCV(SVC(kernel='rbf'), param_grid)
 clf.fit(features_train,labels_train)
-print 'HERE2!!!'
+
 # print sorted(clf.cv_results_.keys())
 
+
 print clf.best_score_
-print clf.get_params()
 print clf.best_estimator_
+print clf.best_params_
+print clf.best_index_
+pred_new = clf.predict(features_test)
+print 'SCORE_NEW: ',accuracy_score(labels_test,pred_new)
+
+from sklearn.metrics import recall_score
+from sklearn.metrics import precision_score
+recall = recall_score(labels_test, pred_new, average='micro')
+precision = precision_score(labels_test, pred_new, average='micro')
+print recall,precision
+
+# import numpy as np
+# from sklearn.model_selection import StratifiedShuffleSplit
+# C_range = np.logspace(-2, 10, 13)
+# gamma_range = np.logspace(-9, 3, 13)
+# param_grid = dict(gamma=gamma_range, C=C_range)
+# cv = StratifiedShuffleSplit(n_splits=5, test_size=0.2, random_state=42)
+# grid = GridSearchCV(SVC(), param_grid=param_grid, cv=cv)
+# grid.fit(features_train, labels_train)
+
+
+# print("The best parameters are %s with a score of %0.2f"
+#       % (grid.best_params_, grid.best_score_))
+
+
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
