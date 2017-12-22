@@ -141,6 +141,7 @@ clf = tree.DecisionTreeClassifier()
 clf.fit(features_train,labels_train)
 pred_tree = clf.predict(features_test)
 print 'TREE : ',accuracy_score(labels_test,pred_tree)
+print 'feature_importances_ : ', clf.feature_importances_
 
 from sklearn.svm import SVC
 from sklearn.svm import LinearSVC
@@ -177,7 +178,8 @@ parameters = {'C': [0.001, 0.01, 0.1, 1, 10], 'gamma': [0.001, 0,0.01, 0.1, 1]}
 svc = SVC(kernel='rbf')
 clf = GridSearchCV(svc, parameters)
 
-parameters_tree = {'min_samples_split': [2,10,20,30,40,50]}
+parameters_tree = {'min_samples_split': range(2,50),'max_depth': range(1,5),'min_samples_leaf': range(1,5),
+                   'max_features':range(3,9),'criterion':['mse','friedman_mse','mae']}
 tree = tree.DecisionTreeClassifier()
 clf_tree = GridSearchCV(tree,parameters_tree)
 
@@ -207,6 +209,7 @@ print clf_tree.best_estimator_
 print clf_tree.best_params_
 pred_new_tree = clf_tree.predict(features_test)
 print 'SCORE_NEW_TREE: ',accuracy_score(labels_test,pred_new_tree)
+
 
 # import numpy as np
 # from sklearn.model_selection import StratifiedShuffleSplit
