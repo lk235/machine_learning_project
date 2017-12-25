@@ -14,11 +14,11 @@ from tester import *
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus',
-                 'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses',
-                 'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock',
-                 'director_fees','to_messages', 'from_poi_to_this_person', 'from_messages',
-                 'from_this_person_to_poi', 'shared_receipt_with_poi'] # You will need to use more features
+# features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus',
+#                  'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses',
+#                  'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock',
+#                  'director_fees','to_messages', 'from_poi_to_this_person', 'from_messages',
+#                  'from_this_person_to_poi', 'shared_receipt_with_poi'] # You will need to use more features
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -85,6 +85,11 @@ for name in data_dict:
     fraction_to_poi = computeFraction( from_this_person_to_poi, from_messages )
     data_point["fraction_to_poi"] = fraction_to_poi
 
+features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus',
+                 'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses',
+                 'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock',
+                 'director_fees','to_messages', 'from_poi_to_this_person', 'from_messages',
+                 'from_this_person_to_poi', 'shared_receipt_with_poi','fraction_from_poi','fraction_to_poi']
 
 
 
@@ -99,7 +104,8 @@ for feature in features_list:
     if feature != 'email_address'and feature != 'poi':
         df[feature] = scaler.fit_transform(df[feature])
 
-recaled_dataset = df.to_dict(orient='index')
+rescaled_dataset = df.to_dict(orient='index')
+my_dataset = data_dict
 # for key,value in my_dataset.iteritems():
 #     print value
 # scaled_df = df.copy()
@@ -118,11 +124,7 @@ recaled_dataset = df.to_dict(orient='index')
 #             data_dict[key][k] = scaler.fit_transform(v)
 
 # my_dataset = data_dict
-# features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus',
-#                  'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses',
-#                  'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock',
-#                  'director_fees','to_messages', 'from_poi_to_this_person', 'from_messages',
-#                  'from_this_person_to_poi', 'shared_receipt_with_poi','fraction_from_poi','fraction_to_poi']
+
 
 ### Extract features and labels from dataset for local testing
 # data = featureFormat(my_dataset, features_list2, sort_keys = True)
@@ -142,7 +144,7 @@ from sklearn.feature_selection import SelectKBest
 # print selector.scores_
 # print selector.pvalues_
 
-new_features = []
+# new_features = []
 # for bool, feature in zip(selector.get_support(), features_list_add_new_features):
 # for bool, feature in zip(selector.get_support(), features_list):
 #     if bool:
@@ -157,90 +159,64 @@ new_features = []
 
 # Provided to give you a starting point. Try a variety of classifiers.
 
-data = featureFormat(data_dict, features_list)
+data = featureFormat(my_dataset, features_list)
 labels, features = targetFeatureSplit(data)
 
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
-features_train, features_test, labels_train, labels_test = train_test_split(features, labels,test_size=0.3,
-                                                                            random_state=42)
-# features_train2, features_test2, labels_train2, labels_test2 = train_test_split(features2, labels2,test_size=0.3,
-#                                                                                 random_state=42)
-#Train with Bayes
-from sklearn.naive_bayes import GaussianNB
-clf = GaussianNB()
-clf.fit(features_train,labels_train)
-pred = clf.predict(features_test)
-print 'Bayes Acc : ',accuracy_score(labels_test,pred)
-# clf.fit(features_train2,labels_train2)
-# pred = clf.predict(features_test2)
-# print 'Bayes Acc With New Features : ',accuracy_score(labels_test2,pred)
+# from sklearn.model_selection import train_test_split
+# features_train, features_test, labels_train, labels_test = train_test_split(features, labels,test_size=0.3,
+#                                                                             random_state=42)
 
-#Train with Tree
-from sklearn import tree
-clf = tree.DecisionTreeClassifier()
-clf.fit(features_train,labels_train)
-pred = clf.predict(features_test)
-print 'Tree Acc : ',accuracy_score(labels_test,pred)
-
-#
-# clf.fit(features_train2,labels_train2)
-# pred= clf.predict(features_test2)
-# print 'Tree Acc With New Features : ',accuracy_score(labels_test2,pred)
-# feature_importances2 = clf.feature_importances_
-# tree_important_features2= []
-# for feature in zip(sorted(feature_importances2,reverse=True), features_list2):
-#     if feature[0] > 0.1:
-#         tree_important_features2.append(feature)
-
-
-# print 'tree_important_features_with_new_features :',tree_important_features2
-# print features_list2
-
-#Train with SVM
-from sklearn.svm import SVC
-clf = SVC()
-clf.fit(features_train,labels_train)
-pred = clf.predict(features_test)
-print 'SVM Acc : ', accuracy_score(labels_test,pred)
-
-
-#Train with Knn
-from sklearn.neighbors import KNeighborsClassifier
-clf = KNeighborsClassifier()
-clf.fit(features_train,labels_train)
-pred = clf.predict(features_test)
-print 'Knn Acc : ',accuracy_score(labels_test,pred)
-# clf.fit(features_train2,labels_train2)
-# pred = clf.predict(features_test2)
-# print 'Knn Acc With New Features : ',accuracy_score(labels_test2,pred)
 
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import recall_score
 from sklearn.metrics import precision_score
 # features_train = features_train[:len(features_train)/10]
 from sklearn.feature_selection import SelectKBest
-# from sklearn.feature_selection import chi2
+from sklearn.pipeline import Pipeline
+from sklearn.naive_bayes import GaussianNB
+n_features = np.arange(1, len(features_list))
+pipe = Pipeline([
+    ('select_features', SelectKBest()),
+    ('classify', GaussianNB())
+])
+param_grid = [
+    {
+        'select_features__k': n_features
+    }
+]
 
-selector = SelectKBest(k=9).fit(features,labels)
-# selector = SelectKBest(k=9).fit(rescale_features,labels)
+clf= GridSearchCV(pipe, param_grid=param_grid, scoring='f1', cv = 10)
+clf.fit(features, labels);
+print clf.best_estimator_
+print clf.best_params_
+
+selector = SelectKBest(k=12).fit(features,labels)
 
 print selector.scores_
 print selector.pvalues_
 
-new_features = []
-# for bool, feature in zip(selector.get_support(), features_list_add_new_features):
-for bool, feature in zip(selector.get_support(), features_list):
-    if bool:
-        new_features.append(feature)
-print new_features
+def get_new_features(selector,features_list):
+    new_features = []
+    for bool, feature in zip(selector.get_support(), features_list):
+        if bool:
+            new_features.append(feature)
+    return new_features
 
-data_org = featureFormat(data_dict, features_list)
-labels_org, features_org = targetFeatureSplit(data_org)
-data = featureFormat(data_dict, new_features)
-recaled_data = featureFormat(recaled_dataset,new_features)
-labels, features = targetFeatureSplit(data)
-recaled_lables, recaled_features = targetFeatureSplit(recaled_data)
+new_features = get_new_features(selector,features_list)
+print 'new_features for bayes :',new_features
+
+# data_org = featureFormat(data_dict, features_list)
+# labels_org, features_org = targetFeatureSplit(data_org)
+# data = featureFormat(data_dict, new_features)
+#
+# labels, features = targetFeatureSplit(data)
+
+# data_for_svm = featureFormat(rescaled_dataset,features_list)
+# svm_lables, svm_features = targetFeatureSplit(data_for_svm)
+# selector_for_svm = SelectKBest(k=3).fit(svm_features,svm_lables)
+# new_features_svm = get_new_features(selector_for_svm,features_list)
+# print 'new_features_svm :',new_features_svm
+
 # features_train, features_test, labels_train, labels_test = train_test_split(features, labels,test_size=0.3,
 #                                                                             random_state=42)
 # labels_train = labels_train[:len(labels_train)/10]
@@ -256,16 +232,16 @@ recaled_lables, recaled_features = targetFeatureSplit(recaled_data)
 from sklearn.preprocessing import scale
 
 #Train with Bayes
-from sklearn.naive_bayes import GaussianNB
-clf_bayes = GaussianNB()
+
 
 #LOOK FOR BSET parameters for SVM
+# from sklearn.svm import SVC
 # from sklearn.cross_validation import StratifiedShuffleSplit
 # parameters_svm = {'kernel':['rbf','linear'],'C': [0.001, 0.01, 0.1, 1, 10], 'gamma': [0,0.001,0.01, 0.1, 1,'auto']}
 # svc = SVC()
-cv = StratifiedShuffleSplit(labels, 1000, random_state = 42)
+# cv = StratifiedShuffleSplit(labels, 1000, random_state = 42)
 # clf_svm = GridSearchCV(svc, parameters_svm,cv= cv,scoring='f1')
-# clf_svm.fit(recaled_features,recaled_lables)
+# clf_svm.fit(svm_features,svm_lables)
 # print clf_svm.best_estimator_
 # print clf_svm.best_params_
 
@@ -274,7 +250,7 @@ cv = StratifiedShuffleSplit(labels, 1000, random_state = 42)
 
 
 
-#
+# TREE
 # pred_svm = clf_svm.predict(features_test)
 # print 'SVM Acc by GridSearchCV : ',accuracy_score(labels_test,pred_svm)
 # recall = recall_score(labels_test, pred_svm )
@@ -292,38 +268,25 @@ cv = StratifiedShuffleSplit(labels, 1000, random_state = 42)
 
 
 
-parameters_tree = {'min_samples_split': [2,10,20,30,40],'max_depth': range(1,5),'min_samples_leaf': range(1,5),
-                  'criterion':['gini','entropy'],'max_features':[None,'sqrt','auto','log2']}
-tree = tree.DecisionTreeClassifier()
-clf_tree = GridSearchCV(tree,parameters_tree,cv=cv,scoring='f1')
-clf_tree.fit(features_org,labels_org)
-feature_importances = clf.feature_importances_
+# parameters_tree = {'min_samples_split': [2,10,20,30,40],'max_depth': range(1,5),'min_samples_leaf': range(1,5),
+#                   'criterion':['gini','entropy'],'max_features':[None,'sqrt','auto','log2']}
+# parameters_tree = {'min_samples_split': [2,10,20,30],'max_depth': range(1,5)}
+# tree = tree.DecisionTreeClassifier()
+# tree.fit(features_org,labels_org)
+#
+# feature_importances = tree.feature_importances_
 #Display the feature names and importance values
 
-tree_important_features = []
-tree_important_features_list = []
-for feature in zip(sorted(feature_importances,reverse=True), features_list):
-    if feature[0] > 0.1:
-        tree_important_features.append(feature)
-        tree_important_features_list.append(feature[1])
-print 'tree_important_features :',tree_important_features
-
-
-
-
-
-# param_grid = {'C': [1e3, 5e3, 1e4, 5e4, 1e5],
-#               'gamma': [0.00001,0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
-# clf = GridSearchCV(SVC(kernel='rbf'), param_grid)
-#
-#
-# print sorted(clf.cv_results_.keys())
-
-
-
-
-
-
+# tree_important_features = []
+# tree_important_features_list = []
+# for feature in zip(sorted(feature_importances,reverse=True), features_list):
+#     if feature[0] > 0.1:
+#         tree_important_features.append(feature)
+#         tree_important_features_list.append(feature[1])
+# print 'tree_important_features :',tree_important_features
+# clf_tree = GridSearchCV(tree,parameters_tree,cv=cv,scoring='f1')
+# print 'START.....'
+# clf_tree.fit(features_org,labels_org)
 
 
 # import numpy as np
@@ -360,14 +323,15 @@ print 'tree_important_features :',tree_important_features
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
 
-
-dump_classifier_and_data(clf_bayes,data_dict,new_features)
+#
+clf = GaussianNB()
+dump_classifier_and_data(clf,my_dataset,new_features)
 print main()
 
-print new_features
-clf_svm = SVC(kernel='rbf',C=10,gamma=1)
-dump_classifier_and_data(clf_svm, recaled_dataset, new_features)
-print main()
+# print 'new_features: ',new_features
+# clf_svm = SVC(kernel='rbf',C=10,gamma=1)
+# dump_classifier_and_data(clf_svm, rescaled_dataset, new_features)
+# print main()
 
 
 # dump_classifier_and_data(clf_tree,data_dict,new_features)
