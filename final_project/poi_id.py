@@ -94,6 +94,10 @@ features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_ad
 
 
 ### Store to my_dataset for easy export below.
+## for bayes and tree
+# my_dataset = data_dict
+
+## for SVM
 from sklearn.preprocessing import MinMaxScaler
 from sklearn import preprocessing
 import pandas as pd
@@ -104,8 +108,8 @@ for feature in features_list:
     if feature != 'email_address'and feature != 'poi':
         df[feature] = scaler.fit_transform(df[feature])
 
-rescaled_dataset = df.to_dict(orient='index')
-my_dataset = data_dict
+my_dataset = df.to_dict(orient='index')
+
 # for key,value in my_dataset.iteritems():
 #     print value
 # scaled_df = df.copy()
