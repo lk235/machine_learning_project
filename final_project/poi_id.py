@@ -14,6 +14,8 @@ from tester import *
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
+
+## features_list without new features
 # features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus',
 #                  'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses',
 #                  'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock',
@@ -64,6 +66,7 @@ matplotlib.pyplot.show()
 for key,value in data_dict.iteritems():
      if value['total_payments'] > 100000000 and value['total_payments'] != 'NaN':
          print key
+
 ### Task 3: Create new feature(s)
 def computeFraction( poi_messages, all_messages ):
     if poi_messages == 0 or all_messages == 0:
@@ -85,6 +88,8 @@ for name in data_dict:
     fraction_to_poi = computeFraction( from_this_person_to_poi, from_messages )
     data_point["fraction_to_poi"] = fraction_to_poi
 
+
+## features_list with new features
 features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus',
                  'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses',
                  'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock',
@@ -178,11 +183,28 @@ from sklearn.metrics import precision_score
 from sklearn.feature_selection import SelectKBest
 from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
 n_features = np.arange(1, len(features_list))
+
+# PineLine for bayes
+# pipe = Pipeline([
+#     ('select_features', SelectKBest()),
+#     ('classify', GaussianNB())
+# ])
+
+# PineLine for SVM
 pipe = Pipeline([
     ('select_features', SelectKBest()),
-    ('classify', GaussianNB())
+    ('classify', SVC())
 ])
+
+#PineLine for tree
+# pipe = Pipeline([
+#     ('select_features', SelectKBest()),
+#     ('classify',DecisionTreeClassifier())
+# ])
+
 param_grid = [
     {
         'select_features__k': n_features
@@ -190,30 +212,59 @@ param_grid = [
 ]
 
 clf= GridSearchCV(pipe, param_grid=param_grid, scoring='f1', cv = 10)
-clf.fit(features, labels);
+clf.fit(features, labels)
 print clf.best_estimator_
 print clf.best_params_
-
+# #
 selector = SelectKBest(k=12).fit(features,labels)
-
-print selector.scores_
-print selector.pvalues_
-
+#
+# print selector.scores_
+# print selector.pvalues_
+#
 def get_new_features(selector,features_list):
     new_features = []
     for bool, feature in zip(selector.get_support(), features_list):
         if bool:
             new_features.append(feature)
     return new_features
-
-new_features = get_new_features(selector,features_list)
-print 'new_features for bayes :',new_features
-
-# data_org = featureFormat(data_dict, features_list)
-# labels_org, features_org = targetFeatureSplit(data_org)
-# data = featureFormat(data_dict, new_features)
 #
+new_features = get_new_features(selector,features_list)
+print 'new_features :',new_features
+
+# parameters_tree = {'min_samples_split': [2,10,20,30,40],'max_depth': range(1,5),'min_samples_leaf': range(1,5),
+#                   'criterion':['gini','entropy'],'max_features':[None,'sqrt','auto','log2']}
+parameters_tree = {'min_samples_split': [2,10,20,30],'max_depth': range(1,5)}
+
+# clf = GridSearchCV(DecisionTreeClassifier(),parameters_tree)
+
+clf = DecisionTreeClassifier()
+clf.fit(features,labels)
+# print clf.best_params_
+feature_importances = clf.feature_importances_
+
+#Display the feature names and importance values
+#
+tree_important_features = []
+tree_important_features_list = []
+for feature in zip(sorted(feature_importances,reverse=True), features_list):
+    if feature[0] > 0.1:
+        tree_important_features.append(feature)
+        tree_important_features_list.append(feature[1])
+print 'tree_important_features :',tree_important_features
+print 'tree_important_features_list :',tree_important_features_list
+# new_features = tree_important_features_list
+
+# data = featureFormat(my_dataset, new_features)
 # labels, features = targetFeatureSplit(data)
+
+# Find best parameters for tree
+cv = StratifiedShuffleSplit(labels,1000,random_state=18)
+clf_tree = GridSearchCV(DecisionTreeClassifier(),parameters_tree,cv=cv,scoring='f1')
+clf_tree.fit(features,labels)
+print clf_tree.best_params_
+print clf_tree.best_estimator_
+
+
 
 # data_for_svm = featureFormat(rescaled_dataset,features_list)
 # svm_lables, svm_features = targetFeatureSplit(data_for_svm)
@@ -238,16 +289,7 @@ from sklearn.preprocessing import scale
 #Train with Bayes
 
 
-#LOOK FOR BSET parameters for SVM
-# from sklearn.svm import SVC
-# from sklearn.cross_validation import StratifiedShuffleSplit
-# parameters_svm = {'kernel':['rbf','linear'],'C': [0.001, 0.01, 0.1, 1, 10], 'gamma': [0,0.001,0.01, 0.1, 1,'auto']}
-# svc = SVC()
-# cv = StratifiedShuffleSplit(labels, 1000, random_state = 42)
-# clf_svm = GridSearchCV(svc, parameters_svm,cv= cv,scoring='f1')
-# clf_svm.fit(svm_features,svm_lables)
-# print clf_svm.best_estimator_
-# print clf_svm.best_params_
+
 
 
 
@@ -272,25 +314,7 @@ from sklearn.preprocessing import scale
 
 
 
-# parameters_tree = {'min_samples_split': [2,10,20,30,40],'max_depth': range(1,5),'min_samples_leaf': range(1,5),
-#                   'criterion':['gini','entropy'],'max_features':[None,'sqrt','auto','log2']}
-# parameters_tree = {'min_samples_split': [2,10,20,30],'max_depth': range(1,5)}
-# tree = tree.DecisionTreeClassifier()
-# tree.fit(features_org,labels_org)
-#
-# feature_importances = tree.feature_importances_
-#Display the feature names and importance values
 
-# tree_important_features = []
-# tree_important_features_list = []
-# for feature in zip(sorted(feature_importances,reverse=True), features_list):
-#     if feature[0] > 0.1:
-#         tree_important_features.append(feature)
-#         tree_important_features_list.append(feature[1])
-# print 'tree_important_features :',tree_important_features
-# clf_tree = GridSearchCV(tree,parameters_tree,cv=cv,scoring='f1')
-# print 'START.....'
-# clf_tree.fit(features_org,labels_org)
 
 
 # import numpy as np
@@ -328,9 +352,15 @@ from sklearn.preprocessing import scale
 ### generates the necessary .pkl files for validating your results.
 
 #
-clf = GaussianNB()
+# clf = GaussianNB()
+clf = DecisionTreeClassifier(min_samples_split= 2 , max_depth=4)
+# test = ['fraction_from_poi','fraction_to_poi']
+# new_features_test = ['poi', 'salary', 'deferral_payments', 'total_payments', 'loan_advances','fraction_from_poi','fraction_to_poi']
+
 dump_classifier_and_data(clf,my_dataset,new_features)
 print main()
+print new_features
+
 
 # print 'new_features: ',new_features
 # clf_svm = SVC(kernel='rbf',C=10,gamma=1)
