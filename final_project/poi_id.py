@@ -93,10 +93,17 @@ for name in data_dict:
 
 
 ## features_list with new features
-features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus',
-                 'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses',
-                 'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock',
-                 'director_fees','to_messages', 'from_poi_to_this_person', 'from_messages',
+# features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus',
+#                  'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses',
+#                  'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock',
+#                  'director_fees','to_messages', 'from_poi_to_this_person', 'from_messages',
+#                  'from_this_person_to_poi', 'shared_receipt_with_poi','fraction_from_poi','fraction_to_poi']
+
+# remove some features
+features_list = ['poi','salary','total_payments', 'bonus',
+                 'total_stock_value', 'expenses',
+                 'exercised_stock_options', 'other', 'restricted_stock',
+                 'to_messages', 'from_poi_to_this_person', 'from_messages',
                  'from_this_person_to_poi', 'shared_receipt_with_poi','fraction_from_poi','fraction_to_poi']
 
 
@@ -234,7 +241,7 @@ clf.fit(features, labels)
 print clf.best_estimator_
 print clf.best_params_
 # # #
-selector = SelectKBest(k=19).fit(features,labels)
+selector = SelectKBest(k=10).fit(features,labels)
 
 print selector.scores_
 print selector.pvalues_
@@ -245,8 +252,8 @@ def get_new_features(selector,features_list):
         if bool:
             new_features.append(feature)
     return new_features
-#
-# new_features = get_new_features(selector,features_list)
+print 'selectBEST :',get_new_features(selector,features_list)
+new_features = get_new_features(selector,features_list)
 # print 'new_features :',new_features
 
 # parameters_tree = {'min_samples_split': [2,10,20,30,40],'max_depth': range(1,5),'min_samples_leaf': range(1,5),
@@ -292,13 +299,13 @@ for feature in zip(sorted(feature_importances,reverse=True), features_list):
         tree_important_features_list.append(feature[1])
 print 'tree_important_features :',tree_important_features
 print 'tree_important_features_list :',tree_important_features_list
-new_features = tree_important_features_list
+# new_features = tree_important_features_list
 
 #Find best parameters for tree
 # data = featureFormat(my_dataset, new_features)
 data = featureFormat(my_dataset, new_features)
 labels, features = targetFeatureSplit(data)
-parameters_tree = {'min_samples_split': [2,5,10,20,30],'max_depth': range(1,5)}
+parameters_tree = {'min_samples_split': [2,5,10,20,30],'max_depth': range(1,5),'class_weight':[None,'balanced']}
 cv = StratifiedShuffleSplit(labels,1000,random_state=18)
 # clf_tree = GridSearchCV(DecisionTreeClassifier(),parameters_tree,cv=cv,scoring='f1')
 clf_tree = GridSearchCV(DecisionTreeClassifier(),parameters_tree,cv=10,scoring='f1')
@@ -403,11 +410,13 @@ from sklearn.preprocessing import scale
 
 #
 # clf = GaussianNB()
-clf = DecisionTreeClassifier(min_samples_split= 2 , max_depth=4)
+clf = DecisionTreeClassifier(min_samples_split= 2 , max_depth=2,class_weight = 'balanced')
+# clf = DecisionTreeClassifier(min_samples_split= 2 , max_depth=4,class_weight = None)
 # clf = SVC(kernel='rbf',C=10,gamma='auto')
 # test = ['fraction_from_poi','fraction_to_poi']
 # new_features_test = ['poi', 'salary', 'deferral_payments', 'total_payments', 'loan_advances','fraction_from_poi','fraction_to_poi']
-
+# new_features = ['poi','salary','bonus', 'exercised_stock_options']
+print new_features
 dump_classifier_and_data(clf,my_dataset,new_features)
 print main()
 
