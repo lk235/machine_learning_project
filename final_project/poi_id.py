@@ -66,7 +66,7 @@ for point in data:
 
 matplotlib.pyplot.xlabel("total_payments")
 matplotlib.pyplot.ylabel("total_stock_value")
-matplotlib.pyplot.show()
+# matplotlib.pyplot.show()
 
 for key,value in data_dict.iteritems():
      if value['total_payments'] > 100000000 and value['total_payments'] != 'NaN':
@@ -130,18 +130,6 @@ my_dataset = df.to_dict(orient='index')
 
 
 
-
-# selector = SelectKBest(k=9).fit(features,labels)
-# selector = SelectKBest(k=9).fit(rescale_features,labels)
-
-
-# new_features = []
-# for bool, feature in zip(selector.get_support(), features_list_add_new_features):
-# for bool, feature in zip(selector.get_support(), features_list):
-#     if bool:
-#         new_features.append(feature)
-# print new_features
-
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
 ### Note that if you want to do PCA or other multi-stage operations,
@@ -165,66 +153,6 @@ print main()
 clf = DecisionTreeClassifier()
 dump_classifier_and_data(clf,my_dataset,features_list)
 print main()
-
-
-
-
-
-
-n_features = np.arange(1, len(features_list))
-
-
-pipe = Pipeline([
-    ('select_features', SelectKBest()),
-    ('classify',DecisionTreeClassifier())
-])
-
-param_grid = [
-    {
-        'select_features__k': n_features
-    }
-]
-
-clf= GridSearchCV(pipe, param_grid=param_grid, scoring='f1', cv = 10)
-clf.fit(features, labels)
-print clf.best_estimator_
-print clf.best_params_
-# # #
-selector = SelectKBest(k=6).fit(features,labels)
-
-print selector.scores_
-print selector.pvalues_
-
-def get_new_features(selector,features_list):
-    new_features = []
-    for bool, feature in zip(selector.get_support(), features_list):
-        if bool:
-            new_features.append(feature)
-    return new_features
-print 'selectBEST :',get_new_features(selector,features_list)
-new_features = get_new_features(selector,features_list)
-# print 'new_features :',new_features
-
-# parameters_tree = {'min_samples_split': [2,10,20,30,40],'max_depth': range(1,5),'min_samples_leaf': range(1,5),
-#                   'criterion':['gini','entropy'],'max_features':[None,'sqrt','auto','log2']}
-
-
-# clf = GridSearchCV(DecisionTreeClassifier(),parameters_tree)
-
-
-
-#Find best parameters for tree
-# data = featureFormat(my_dataset, new_features)
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -262,6 +190,7 @@ for train_idx, test_idx in cv:
         labels_test.append(labels[jj])
 
     ### fit the classifier using training set, and test on test set
+
     clf.fit(features_train, labels_train)
     predictions = clf.predict(features_test)
 
@@ -280,8 +209,19 @@ print 'tree_important_features_list :',tree_important_features_list
 # features_list = tree_important_features_list
 
 # Use SelectBest to select features
-# 参数调整
-parameters= {'min_samples_split': [2,5,10,20,30],'max_depth': range(1,5),'class_weight':[None,'balanced']}
+selector = SelectKBest(k=6).fit(features_train, labels_train)
+def get_new_features(selector,features_list):
+    new_features = []
+    for bool, feature in zip(selector.get_support(), features_list):
+        if bool:
+            new_features.append(feature)
+    return new_features
+
+print 'selectBEST :',get_new_features(selector,features_list)
+features_list = get_new_features(selector,features_list)
+
+# parameter tuning
+parameters = {'min_samples_split': [2,5,10,20,30],'max_depth': range(1,5),'class_weight':[None,'balanced']}
 cv = StratifiedShuffleSplit(labels,1000,random_state=18)
 clf_tree = GridSearchCV(DecisionTreeClassifier(),parameters,cv=10,scoring='f1')
 clf_tree.fit(features,labels)
@@ -298,5 +238,6 @@ print clf_tree.best_estimator_
 clf = DecisionTreeClassifier(min_samples_split= 2 , max_depth= 2,class_weight = 'balanced')
 dump_classifier_and_data(clf,my_dataset,features_list)
 print main()
+print features_list
 
 
